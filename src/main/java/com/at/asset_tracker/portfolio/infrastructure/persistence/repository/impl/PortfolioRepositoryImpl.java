@@ -11,18 +11,14 @@ import com.at.asset_tracker.portfolio.domain.repository.PortfolioRepository;
 import com.at.asset_tracker.portfolio.infrastructure.persistence.entity.PortfolioEntity;
 import com.at.asset_tracker.portfolio.infrastructure.persistence.entity.PortfolioItemEntity;
 import com.at.asset_tracker.portfolio.infrastructure.persistence.repository.PortfolioJpaRepository;
-import com.at.asset_tracker.user.infrastructure.persistence.entity.UserEntity;
-import com.at.asset_tracker.user.infrastructure.persistence.repository.UserJpaRepository;
 
 @Repository
 public class PortfolioRepositoryImpl implements PortfolioRepository {
 
     private final PortfolioJpaRepository jpaRepository;
-    private final UserJpaRepository userJpaRepository;
 
-    public PortfolioRepositoryImpl(PortfolioJpaRepository jpaRepository, UserJpaRepository userJpaRepository) {
+    public PortfolioRepositoryImpl(PortfolioJpaRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
-        this.userJpaRepository = userJpaRepository;
     }
 
     @Override
@@ -40,20 +36,13 @@ public class PortfolioRepositoryImpl implements PortfolioRepository {
                 .map(this::toDomain);
     }
 
-    @Override
-    public Optional<Portfolio> findByUserId(Long userId) {
-        return jpaRepository.findByUserId(userId)
-                .map(this::toDomain);
-    }
-
     private PortfolioEntity toEntity(Portfolio portfolio) {
 
         PortfolioEntity entity = new PortfolioEntity();
         entity.setId(portfolio.id());
 
         if (portfolio.userId() != null) {
-            UserEntity ref = userJpaRepository.getReferenceById(portfolio.userId());
-            entity.setUser(ref);
+            entity.setUserId(portfolio.userId());
         }
 
         Set<PortfolioItemEntity> itemEntities = portfolio.items()
@@ -77,7 +66,7 @@ public class PortfolioRepositoryImpl implements PortfolioRepository {
 
         Portfolio portfolio = new Portfolio(
                 entity.getId(),
-                entity.getUser().getId());
+                entity.getUserId());
 
         entity.getItems().forEach(itemEntity -> {
             portfolio.internalAddItem(itemEntity.getId(),

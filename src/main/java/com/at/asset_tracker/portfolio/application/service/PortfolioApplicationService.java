@@ -2,10 +2,12 @@ package com.at.asset_tracker.portfolio.application.service;
 
 import java.math.BigDecimal;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import com.at.asset_tracker.market.application.service.MarketPriceService;
+import com.at.asset_tracker.portfolio.application.dto.response.PriceResponse;
 import com.at.asset_tracker.portfolio.domain.model.Portfolio;
 import com.at.asset_tracker.portfolio.domain.repository.AssetRepository;
 import com.at.asset_tracker.portfolio.domain.repository.PortfolioRepository;
@@ -15,13 +17,13 @@ import com.at.asset_tracker.portfolio.domain.repository.PortfolioRepository;
 public class PortfolioApplicationService {
 
     private final PortfolioRepository portfolioRepository;
-    private final MarketPriceService marketPriceService;
     private final AssetRepository assetRepository;
+    private final WebClient marketWebClient;
 
     public PortfolioApplicationService(PortfolioRepository portfolioRepository,
-            MarketPriceService marketPriceService, AssetRepository assetRepository) {
+            AssetRepository assetRepository, @Qualifier("marketWebClient") WebClient marketWebClient) {
         this.portfolioRepository = portfolioRepository;
-        this.marketPriceService = marketPriceService;
+        this.marketWebClient = marketWebClient;
         this.assetRepository = assetRepository;
     }
 
@@ -47,12 +49,6 @@ public class PortfolioApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public Portfolio findByUserId(Long userId) {
-        return portfolioRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Portfolio not found for user ID: " + userId));
-    }
-
-    @Transactional(readOnly = true)
     public BigDecimal calculatePortfolioValue(Long portfolioId) {
 
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
@@ -65,12 +61,25 @@ public class PortfolioApplicationService {
                     var asset = assetRepository.findById(item.assetId())
                             .orElseThrow(() -> new RuntimeException("Asset not found"));
 
-                    BigDecimal price = marketPriceService
-                            .getCurrentPrice(asset.symbol(), asset.type().name());
+                    BigDecimal price = getCurrentPrice(asset.symbol(), asset.type().name());
 
                     return price.multiply(item.quantity());
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getCurrentPrice(String symbol, String type) {
+
+        return marketWebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/prices")
+                        .queryParam("symbol", symbol)
+                        .queryParam("type", type)
+                        .build())
+                .retrieve()
+                .bodyToMono(PriceResponse.class)
+                .block()
+                .price();
     }
 
 }

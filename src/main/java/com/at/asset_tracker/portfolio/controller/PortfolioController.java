@@ -48,14 +48,6 @@ public class PortfolioController {
         return ResponseEntity.ok(toResponse(portfolio));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<PortfolioResponse> findByUserId(@PathVariable Long userId) {
-
-        Portfolio portfolio = portfolioService.findByUserId(userId);
-
-        return ResponseEntity.ok(toResponse(portfolio));
-    }
-
     @GetMapping("/{id}/value")
     public ResponseEntity<BigDecimal> calculateValue(@PathVariable Long id) {
 

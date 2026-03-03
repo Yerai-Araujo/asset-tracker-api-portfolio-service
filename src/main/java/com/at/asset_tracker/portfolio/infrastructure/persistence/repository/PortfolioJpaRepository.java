@@ -1,7 +1,5 @@
 package com.at.asset_tracker.portfolio.infrastructure.persistence.repository;
 
-import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.at.asset_tracker.portfolio.infrastructure.persistence.entity.PortfolioEntity;
@@ -9,5 +7,4 @@ import com.at.asset_tracker.portfolio.infrastructure.persistence.entity.Portfoli
 public interface PortfolioJpaRepository
         extends JpaRepository<PortfolioEntity, Long> {
 
-    Optional<PortfolioEntity> findByUserId(Long userId);
 }

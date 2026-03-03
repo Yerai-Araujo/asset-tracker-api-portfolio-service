@@ -22,7 +22,7 @@ public class AssetDataLoader implements ApplicationRunner {
     public void run(ApplicationArguments args) {
 
         if (!repository.existsBySymbol("BTC")) {
-            repository.save(new Asset(null, "BTCUSD", AssetType.CRYPTO, AssetUnit.BTC, "Bitcoin"));
+            repository.save(new Asset(null, "BTC", AssetType.CRYPTO, AssetUnit.BTC, "Bitcoin"));
         }
 
         if (!repository.existsBySymbol("XAG")) {
