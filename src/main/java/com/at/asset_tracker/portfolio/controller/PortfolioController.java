@@ -17,7 +17,9 @@ import com.at.asset_tracker.portfolio.application.dto.request.AddPortfolioItemRe
 import com.at.asset_tracker.portfolio.application.dto.request.CreatePortfolioRequest;
 import com.at.asset_tracker.portfolio.application.dto.response.PortfolioItemResponse;
 import com.at.asset_tracker.portfolio.application.dto.response.PortfolioResponse;
+import com.at.asset_tracker.portfolio.application.dto.response.UserResponse;
 import com.at.asset_tracker.portfolio.application.service.PortfolioApplicationService;
+import com.at.asset_tracker.portfolio.application.service.UserApplicationServiceClient;
 import com.at.asset_tracker.portfolio.domain.model.Portfolio;
 
 @RestController
@@ -25,9 +27,11 @@ import com.at.asset_tracker.portfolio.domain.model.Portfolio;
 public class PortfolioController {
 
     private final PortfolioApplicationService portfolioService;
+    private final UserApplicationServiceClient userClient;
 
-    public PortfolioController(PortfolioApplicationService portfolioService) {
+    public PortfolioController(PortfolioApplicationService portfolioService, UserApplicationServiceClient userClient) {
         this.portfolioService = portfolioService;
+        this.userClient = userClient;
     }
 
     @PostMapping
@@ -64,6 +68,14 @@ public class PortfolioController {
         return ResponseEntity
                 .created(URI.create("/api/portfolios/" + id + "/addAsset/" + request.assetId()))
                 .body(toResponse(portfolio));
+    }
+
+    @GetMapping("/userExists/{id}")
+    public ResponseEntity<UserResponse> userExists(@PathVariable Long id) {
+
+        UserResponse user = userClient.validateUserExists(id);
+
+        return ResponseEntity.ok(user);
     }
 
     private PortfolioResponse toResponse(Portfolio portfolio) {

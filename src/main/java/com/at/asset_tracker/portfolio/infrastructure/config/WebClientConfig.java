@@ -11,10 +11,21 @@ public class WebClientConfig {
     @Value("${market.service.url}")
     private String marketServiceUrl;
 
+    @Value("${user.service.url}")
+    private String userServiceUrl;
+
     @Bean("marketWebClient")
     public WebClient marketWebClient() {
         return WebClient.builder()
                 .baseUrl(marketServiceUrl)
                 .build();
     }
+
+    @Bean("userWebClient")
+    public WebClient userWebClient() {
+        return WebClient.builder()
+                .baseUrl(userServiceUrl)
+                .build();
+    }
+
 }

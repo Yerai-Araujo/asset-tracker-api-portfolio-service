@@ -33,6 +33,15 @@ public class GlobalExceptionHandler {
         return Map.of("error", errorMessage);
     }
 
+    @ExceptionHandler(value = {RuntimeException.class})
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public Map<String, String> handleExternalServiceError(RuntimeException ex) {
+        if (ex.getMessage() != null && ex.getMessage().contains("Error validating user")) {
+            return Map.of("error", ex.getMessage());
+        }
+        return Map.of("error", "Unexpected error");
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleGeneric(Exception ex) {
