@@ -59,4 +59,9 @@ public class AssetRepositoryImpl implements AssetRepository {
                 .map(this::toDomain);
     }
 
+    @Override
+    public void delete(Long id) {
+        jpaRepository.deleteById(id);
+    }
+
 }

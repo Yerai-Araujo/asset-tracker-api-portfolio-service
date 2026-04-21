@@ -17,10 +17,10 @@ public class UserApplicationServiceClient {
         this.webClient = webClient;
     }
 
-    public UserResponse validateUserExists(Long userId) {
+    public UserResponse userExists(Long userId) {
         try {
             return webClient.get()
-                    .uri("/api/users/validate/user/{id}", userId)
+                    .uri("/api/users/{id}", userId)
                     .retrieve()
                     .bodyToMono(UserResponse.class)
                     .block();

@@ -12,6 +12,8 @@ public interface AssetRepository {
 
     Optional<Asset> findById(Long id);
 
+    void delete(Long id);
+
 }
 
 

@@ -36,6 +36,27 @@ public class PortfolioRepositoryImpl implements PortfolioRepository {
                 .map(this::toDomain);
     }
 
+    @Override
+    public Optional<Portfolio> findByUserId(Long userId) {
+        return jpaRepository.findAll()
+                .stream()
+                .filter(entity -> entity.getUserId().equals(userId))
+                .findFirst()
+                .map(this::toDomain);
+    }
+
+    @Override
+    public boolean existsByUserId(Long userId) {
+        return jpaRepository.findAll()
+                .stream()                
+                .anyMatch(entity -> entity.getUserId().equals(userId));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        jpaRepository.deleteById(id);
+    }
+
     private PortfolioEntity toEntity(Portfolio portfolio) {
 
         PortfolioEntity entity = new PortfolioEntity();

@@ -10,5 +10,11 @@ public interface PortfolioRepository {
     Portfolio save(Portfolio portfolio);
 
     Optional<Portfolio> findById(Long id);
+
+    Optional<Portfolio> findByUserId(Long userId);
+
+    boolean existsByUserId(Long userId);
+
+    void deleteById(Long id);
 }
 

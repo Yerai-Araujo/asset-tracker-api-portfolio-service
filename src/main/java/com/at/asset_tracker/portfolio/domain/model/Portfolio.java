@@ -14,10 +14,6 @@ public class Portfolio {
     private Set<PortfolioItem> items = new HashSet<>();
 
     public Portfolio(Long id, Long userId) {
-        if (userId == null) {
-            throw new IllegalArgumentException("User ID cannot be null");
-        }
-
         this.id = id;
         this.userId = userId;
     }
@@ -32,6 +28,10 @@ public class Portfolio {
 
     public Set<PortfolioItem> items() {
         return Collections.unmodifiableSet(items);
+    }
+
+    public static Portfolio create(Long userId) {
+        return new Portfolio(null, userId);   
     }
 
     public void addAsset(Long assetId, BigDecimal quantity) {
@@ -59,4 +59,5 @@ public class Portfolio {
         PortfolioItem item = new PortfolioItem(id, assetId, quantity);
         items.add(item);
     }
+
 }
